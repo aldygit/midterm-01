@@ -5,7 +5,7 @@ package academy.javapro;
  * Features overdraft protection and transaction fees.
  */
 public class CheckingAccount extends Account {
-    private final double overdraftLimit;
+    private double overdraftLimit;
     private static final double TRANSACTION_FEE = 1.5; // Fee per withdrawal
 
     /**
@@ -17,26 +17,23 @@ public class CheckingAccount extends Account {
      * @param overdraftLimit The maximum allowed overdraft
      */
     public CheckingAccount(String accountNumber, String customerName, double initialBalance, double overdraftLimit) {
-        super(accountNumber, customerName, initialBalance); // Call to the parent constructor
+        super(accountNumber, customerName, initialBalance);
         this.overdraftLimit = overdraftLimit;
     }
 
     /**
      * Getter for overdraft limit.
-     *
-     * @return The overdraft limit
      */
     public double getOverdraftLimit() {
-        throw new UnsupportedOperationException("Method not implemented");
+        return overdraftLimit;
     }
 
     /**
      * Sets a new overdraft limit.
-     *
-     * @param overdraftLimit The new overdraft limit
      */
     public void setOverdraftLimit(double overdraftLimit) {
-        throw new UnsupportedOperationException("Method not implemented");
+        this.overdraftLimit = overdraftLimit;
+        logTransaction("OVERDRAFT_LIMIT_UPDATE", overdraftLimit);
     }
 
     /**
@@ -45,7 +42,17 @@ public class CheckingAccount extends Account {
      */
     @Override
     public void withdraw(double amount) {
-        throw new UnsupportedOperationException("Method not implemented");
+        double totalAmount = amount + TRANSACTION_FEE;
+        if (getBalance() - totalAmount >= -overdraftLimit) {
+            setBalance(getBalance() - totalAmount);
+            logTransaction("WITHDRAWAL", amount);
+            logTransaction("FEE", TRANSACTION_FEE);
+            if (getBalance() < 0) {
+                System.out.println("Account is in overdraft. Current balance: $" + String.format("%.2f", getBalance()));
+            }
+        } else {
+            System.out.println("Withdrawal declined! Exceeds overdraft limit.");
+        }
     }
 
     /**
@@ -53,7 +60,7 @@ public class CheckingAccount extends Account {
      */
     @Override
     public void displayInfo() {
-        super.displayInfo(); // Call to the parent method
+        super.displayInfo();
         System.out.println("Account Type: Checking Account");
         System.out.println("Overdraft Limit: $" + String.format("%.2f", overdraftLimit));
         System.out.println("Transaction Fee: $" + String.format("%.2f", TRANSACTION_FEE));

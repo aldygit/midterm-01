@@ -17,33 +17,37 @@ public class SavingsAccount extends Account {
      * @param interestRate The annual interest rate (%)
      */
     public SavingsAccount(String accountNumber, String customerName, double initialBalance, double interestRate) {
-        super(accountNumber, customerName, initialBalance); // Call to the parent constructor
+        super(accountNumber, customerName, initialBalance);
         this.interestRate = interestRate;
     }
 
     /**
      * Calculates the interest amount based on the current balance.
-     *
-     * @return The calculated interest amount
      */
     public double calculateInterest() {
-        throw new UnsupportedOperationException("Method not implemented");
+        return getBalance() * (interestRate / 100);
     }
 
     /**
      * Applies the calculated interest to the account balance.
      */
     public void applyInterest() {
-        throw new UnsupportedOperationException("Method not implemented");
+        double interest = calculateInterest();
+        setBalance(getBalance() + interest);
+        logTransaction("INTEREST", interest);
     }
 
     /**
      * Overrides the withdraw method with savings account-specific rules.
-     * Ensures minimum balance is maintained.
      */
     @Override
     public void withdraw(double amount) {
-        throw new UnsupportedOperationException("Method not implemented");
+        if (getBalance() - amount < MIN_BALANCE) {
+            System.out.println("Cannot withdraw $" + amount + ". Minimum balance of $" + MIN_BALANCE + " must be maintained.");
+        } else {
+            setBalance(getBalance() - amount);
+            logTransaction("WITHDRAWAL", amount);
+        }
     }
 
     /**
@@ -51,7 +55,7 @@ public class SavingsAccount extends Account {
      */
     @Override
     public void displayInfo() {
-        super.displayInfo(); // Call to the parent method
+        super.displayInfo();
         System.out.println("Account Type: Savings Account");
         System.out.println("Interest Rate: " + interestRate + "%");
         System.out.println("Minimum Balance Requirement: $" + MIN_BALANCE);
